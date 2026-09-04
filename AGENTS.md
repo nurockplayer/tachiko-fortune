@@ -19,14 +19,17 @@ Read them before making changes.
 
 ## Engineering defaults
 
-- Godot 4.x + typed GDScript for v0 unless an accepted decision says otherwise.
+- Godot 4.x is the initial runtime/presentation engine.
+- Typed GDScript is the **v0 implementation default**, chosen to minimize integration/tooling friction. It is not a permanent product or domain contract.
+- Keep canonical state, commands, domain events, content contracts, determinism, and rule invariants independent of scene-instance behavior and avoid unnecessary GDScript-only semantics at public/domain boundaries.
+- A later move of some or all domain implementation to C#, Rust, or another suitable technology is allowed through an accepted GitHub architecture decision when maintainability, testability, tooling, performance, platform constraints, networking, or cross-runtime reuse justify it.
 - Keep canonical rules in deterministic domain code, not scenes/UI/animation.
 - All rule-changing input goes through validated commands.
 - Randomness must be seeded and deterministic.
 - AI must use the same legal command surface as human input.
 - Content must be data-driven, versioned, and validated.
 - Tachiko Work may become an authoring tool later, but is not a runtime dependency.
-- Do not add online services, databases, C#/Rust/native extensions, networking infrastructure, or large frameworks without an accepted issue/decision that requires them.
+- Do not add online services, databases, additional runtime languages/native extensions, networking infrastructure, or large frameworks without an accepted issue/decision that requires them.
 
 ## Change discipline
 
