@@ -17,16 +17,28 @@ UI, animation, audio, and input may react to canonical game state, but they must
 ### Runtime
 
 - **Godot 4.x**, with the exact stable version pinned by the bootstrap issue and CI.
-- **Typed GDScript** for v0.
-- Headless Godot execution for rule tests and simulation checks.
+- **Typed GDScript is the v0 implementation default, not a long-term product contract.**
+- Headless Godot execution is the initial test/simulation path.
 
-Do not add C#, Rust, native extensions, an external backend, ECS frameworks, or networking libraries until a measured need is accepted in GitHub.
+Do not add C#, Rust, native extensions, an external backend, ECS frameworks, or networking libraries during the bootstrap unless an accepted GitHub decision explicitly changes the scope.
 
 ### Why typed GDScript first
 
-The first risk is whether the game loop is good, not raw compute performance. Typed GDScript keeps iteration fast, integrates naturally with Godot, and is sufficient for a compact deterministic board-game simulation when the domain is kept free of scene-tree dependencies.
+The first risk is whether the game loop and architecture are good, not raw compute performance. Typed GDScript minimizes Godot integration/tooling friction, provides enough type information for disciplined AI-assisted development, and is sufficient for a compact deterministic board-game vertical slice when the domain stays independent of scene-tree behavior.
 
-A later language split is allowed only behind explicit interfaces and only after profiling or platform requirements justify it.
+That convenience must not leak into the product model. Canonical state, commands, domain events, content schemas, deterministic RNG behavior, persistence semantics, and rule invariants must not depend on GDScript-only or scene-instance semantics where a plain typed data contract is sufficient.
+
+A future domain-language/runtime change is a normal architectural migration, not a rewrite of the game model. It may be justified by evidence such as:
+
+- maintainability or refactoring quality;
+- stronger static typing or tooling needs;
+- testability or headless-simulation ergonomics;
+- measured performance requirements;
+- platform/export constraints;
+- reuse of the deterministic domain outside the Godot runtime;
+- networking/server-authority requirements that materially benefit from a different runtime.
+
+Any such change requires an accepted GitHub decision that defines the migration boundary and compatibility impact. It does **not** require changing the product vision or constitution unless one of the actual architectural principles changes.
 
 ## 3. Layer model
 
@@ -349,7 +361,7 @@ Targets:
 
 Open a decision issue before:
 
-- introducing C#, Rust, GDExtension, or another runtime language;
+- changing the v0 implementation language or introducing a second domain/runtime language such as C#, Rust, GDExtension, or another runtime;
 - adding a backend/database/account service;
 - implementing online networking;
 - changing canonical save/replay contracts after release usage exists;
@@ -357,6 +369,8 @@ Open a decision issue before:
 - adding an importer/compatibility layer for third-party game data;
 - weakening deterministic simulation requirements;
 - moving canonical rules into scenes/UI.
+
+A language-change decision should evaluate migration cost against concrete benefits in maintainability, testability, tooling, performance, platform support, or cross-runtime reuse. The default is to preserve the canonical contracts and replace only the implementation surface that needs to change.
 
 ## 16. v0 dependency direction summary
 
@@ -371,3 +385,5 @@ presentation / AI adapters / persistence adapters
 ```
 
 AI and human input both produce commands. Presentation and persistence observe or serialize domain truth. Future networking must connect at the command/state boundary rather than becoming a second rules engine.
+
+The language choice sits **inside** the deterministic-domain implementation box; it is not part of the external product contract. Changing that language later must not require redesigning board/content semantics, player commands, canonical state meaning, or presentation ownership boundaries.
