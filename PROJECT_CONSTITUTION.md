@@ -45,7 +45,9 @@ If a contributor is unsure whether something is too close to a reference work, t
 ## 4. Architecture principles
 
 - Godot is the initial runtime and presentation engine.
-- v0 uses **typed GDScript** unless an accepted decision demonstrates a concrete need for another language.
+- v0 defaults to **typed GDScript** because it minimizes Godot integration and tooling friction while the vertical slice is still proving the product and architecture.
+- The implementation language is **not a product contract**. Canonical state, commands, domain rules, content contracts, determinism, and presentation boundaries must remain conceptually portable enough that the domain implementation can later move to C#, Rust, or another suitable technology without redesigning the game model.
+- A language/runtime migration requires an accepted GitHub decision with a concrete reason such as maintainability, testability, performance, tooling quality, platform constraints, or cross-runtime reuse. It does not require a constitutional amendment unless one of the actual architecture principles changes.
 - Domain/simulation code MUST NOT depend on scene-tree timing, rendered nodes, animation state, or wall-clock time.
 - Canonical game state is explicit data; UI is a projection of that state.
 - Player and AI actions enter the simulation as validated commands.
